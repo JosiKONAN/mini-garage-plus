@@ -112,4 +112,4 @@ Suite PHPUnit creee pour la Semaine 6 (`tests/Feature/ApiFunctionsS6Test.php`) :
 
 ## Lien
 
-- Depot GitHub : <https://github.com/josias-konan/mini-garage-plus>
+- Depot GitHub : <https://github.com/JosiKONAN/mini-garage-plus>
