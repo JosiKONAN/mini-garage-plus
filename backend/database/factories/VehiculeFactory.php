@@ -25,8 +25,20 @@ class VehiculeFactory extends Factory
             'Mercedes-Benz' => ['Classe A', 'Classe C', 'Sprinter', 'GLA'],
             'Hyundai' => ['i10', 'Elantra', 'Tucson', 'Santa Fe'],
         ];
+        $images = [
+            'Toyota' => ['Corolla', 'Hilux', 'RAV4', 'Yaris'],
+            'Peugeot' => ['208', '3008', '508', 'Partner'],
+            'Renault' => ['Clio', 'Megane', 'Kangoo', 'Duster'],
+            'Kia' => ['Picanto', 'Rio', 'Sportage', 'Sorento'],
+            'Mercedes-Benz' => ['Classe A', 'Classe C', 'Sprinter', 'GLA'],
+            'Hyundai' => ['i10', 'Elantra', 'Tucson', 'Santa Fe'],
+        ];
         $marque = $this->faker->randomElement(array_keys($marques));
         $modele = $this->faker->randomElement($marques[$marque]);
+        $imageSlug = strtolower(str_replace(['-', ' '], '_', $marque)) === 'mercedes_benz'
+            ? 'mercedes'
+            : strtolower(str_replace(['-', ' '], '_', $marque));
+        $image = 'images/vehicules/' . $imageSlug . '_' . strtolower(str_replace(' ', '_', $modele)) . '.jpg';
         $couleurs = ['Blanc', 'Noir', 'Gris', 'Rouge', 'Bleu', 'Vert', 'Argent'];
         $carrosseries = ['Berline', 'SUV', 'Break', 'Monospace', 'Citadine', 'Pick-up', 'Utilitaire'];
         $energies = ['essence', 'diesel', 'hybride', 'electrique'];
@@ -44,6 +56,7 @@ class VehiculeFactory extends Factory
             'carrosserie' => $this->faker->randomElement($carrosseries),
             'energie' => $this->faker->randomElement($energies),
             'boite' => $this->faker->randomElement($boites),
+            'image' => $image,
         ];
     }
 }

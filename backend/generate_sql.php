@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS vehicules (
   carrosserie     VARCHAR(30)  NULL,
   energie         VARCHAR(20)  NOT NULL DEFAULT 'essence',
   boite           VARCHAR(20)  NOT NULL DEFAULT 'manuelle',
+  image           VARCHAR(255) NULL,
   created_at      TIMESTAMP    NULL,
   updated_at      TIMESTAMP    NULL
 ) ENGINE=InnoDB;

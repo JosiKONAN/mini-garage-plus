@@ -11,8 +11,8 @@ export default function Navbar() {
   return (
     <nav className="navbar navbar-expand navbar-dark bg-dark">
       <div className="container">
-        <NavLink className="navbar-brand fw-semibold" to="/">
-          Mini Garage Plus
+        <NavLink className="navbar-brand d-inline-flex align-items-center fw-semibold" to="/">
+          <img src="/logo.svg" alt="Mini Garage Plus" height="34" width="170" />
         </NavLink>
         <ul className="navbar-nav ms-auto">
           {links.map((l) => (

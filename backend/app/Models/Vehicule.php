@@ -20,6 +20,7 @@ class Vehicule extends Model
         'carrosserie',
         'energie',
         'boite',
+        'image',
     ];
 
     /**

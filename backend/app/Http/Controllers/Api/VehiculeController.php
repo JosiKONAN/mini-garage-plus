@@ -45,6 +45,7 @@ class VehiculeController extends Controller
             'carrosserie' => 'nullable|string|max:30',
             'energie' => 'required|in:essence,diesel,hybride,electrique',
             'boite' => 'required|in:manuelle,automatique',
+            'image' => 'nullable|string|max:255',
         ]);
 
         $vehicule = Vehicule::create($data);
@@ -87,6 +88,7 @@ class VehiculeController extends Controller
             'carrosserie' => 'nullable|string|max:30',
             'energie' => 'sometimes|in:essence,diesel,hybride,electrique',
             'boite' => 'sometimes|in:manuelle,automatique',
+            'image' => 'nullable|string|max:255',
         ]);
 
         $vehicule->update($data);

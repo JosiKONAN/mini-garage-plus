@@ -1,8 +1,19 @@
 import { Link } from 'react-router-dom';
+import { vehiculeImage } from '../api';
 
 export default function VehiculeCard({ vehicule }) {
+  const image = vehiculeImage(vehicule);
   return (
     <div className="card h-100">
+      {image && (
+        <img
+          src={image}
+          alt={`${vehicule.marque} ${vehicule.modele}`}
+          className="card-img-top"
+          style={{ height: '160px', objectFit: 'cover' }}
+          loading="lazy"
+        />
+      )}
       <div className="card-body">
         <h6 className="card-title text-uppercase text-muted mb-1">
           {vehicule.marque} {vehicule.modele}

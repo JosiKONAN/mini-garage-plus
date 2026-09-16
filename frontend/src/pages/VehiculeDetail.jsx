@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import api from '../api';
+import api, { vehiculeImage } from '../api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -41,6 +41,14 @@ export default function VehiculeDetail() {
 
       <div className="row g-4">
         <div className="col-lg-5">
+          {vehiculeImage(vehicule) && (
+            <img
+              src={vehiculeImage(vehicule)}
+              alt={`${vehicule.marque} ${vehicule.modele}`}
+              className="img-fluid rounded mb-3 w-100"
+              style={{ objectFit: 'cover', maxHeight: '280px' }}
+            />
+          )}
           <div className="card">
             <div className="card-header bg-transparent fw-semibold">Fiche véhicule</div>
             <ul className="list-group list-group-flush">
