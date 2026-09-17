@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
 import { vehiculeImage } from '../api';
 
+function fallbackAlt(e) {
+  e.currentTarget.style.display = 'none';
+}
+
 export default function VehiculeCard({ vehicule }) {
   const image = vehiculeImage(vehicule);
   return (
@@ -12,6 +16,7 @@ export default function VehiculeCard({ vehicule }) {
           className="card-img-top"
           style={{ height: '160px', objectFit: 'cover' }}
           loading="lazy"
+          onError={fallbackAlt}
         />
       )}
       <div className="card-body">

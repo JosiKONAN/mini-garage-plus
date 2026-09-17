@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('vehicules', function (Blueprint $table) {
             $table->id();
-            $table->string('immatriculation')->unique();
-            $table->string('marque');
-            $table->string('modele');
-            $table->string('couleur')->nullable();
+            $table->string('immatriculation', 20)->unique();
+            $table->string('marque', 50);
+            $table->string('modele', 50);
+            $table->string('couleur', 30)->nullable();
             $table->year('annee');
             $table->unsignedInteger('kilometrage')->default(0);
-            $table->string('carrosserie')->nullable();
-            $table->string('energie')->default('essence');
-            $table->string('boite')->default('manuelle');
+            $table->string('carrosserie', 30)->nullable();
+            $table->string('energie', 20)->default('essence');
+            $table->string('boite', 20)->default('manuelle');
             $table->timestamps();
         });
     }

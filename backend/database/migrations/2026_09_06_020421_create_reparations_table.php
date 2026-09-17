@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('vehicule_id')->constrained('vehicules')->onDelete('cascade');
             $table->date('date');
             $table->decimal('duree_main_oeuvre', 5, 2); // en heures (main-d'oeuvre)
-            $table->string('objet_reparation');
+            $table->string('objet_reparation', 255);
             $table->timestamps();
         });
     }

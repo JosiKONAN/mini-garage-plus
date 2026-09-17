@@ -1,20 +1,24 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import api from '../api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
 export default function ReparationForm() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [vehicules, setVehicules] = useState([]);
   const [techniciens, setTechniciens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
+  const today = new Date();
+  const todayLocal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
   const [form, setForm] = useState({
-    vehicule_id: '',
-    date: new Date().toISOString().slice(0, 10),
+    vehicule_id: searchParams.get('vehicule_id') || '',
+    date: todayLocal,
     duree_main_oeuvre: '',
     objet_reparation: '',
     techniciens: [],
@@ -70,8 +74,9 @@ export default function ReparationForm() {
         <form onSubmit={handleSubmit} className="card">
           <div className="card-body">
             <div className="mb-3">
-              <label className="form-label">Véhicule *</label>
+              <label className="form-label" htmlFor="vehicule_id">Véhicule *</label>
               <select
+                id="vehicule_id"
                 name="vehicule_id"
                 className="form-select"
                 value={form.vehicule_id}
@@ -89,9 +94,10 @@ export default function ReparationForm() {
 
             <div className="row g-3">
               <div className="col-md-5">
-                <label className="form-label">Date *</label>
+                <label className="form-label" htmlFor="date">Date *</label>
                 <input
                   type="date"
+                  id="date"
                   name="date"
                   className="form-control"
                   value={form.date}
@@ -100,12 +106,14 @@ export default function ReparationForm() {
                 />
               </div>
               <div className="col-md-7">
-                <label className="form-label">Durée de main-d’œuvre (heures) *</label>
+                <label className="form-label" htmlFor="duree_main_oeuvre">Durée de main-d’œuvre (heures) *</label>
                 <input
                   type="number"
+                  id="duree_main_oeuvre"
                   name="duree_main_oeuvre"
                   className="form-control"
                   min="0"
+                  max="999.99"
                   step="0.5"
                   value={form.duree_main_oeuvre}
                   onChange={handleChange}
@@ -115,9 +123,10 @@ export default function ReparationForm() {
             </div>
 
             <div className="mb-3 mt-3">
-              <label className="form-label">Objet de la réparation *</label>
+              <label className="form-label" htmlFor="objet_reparation">Objet de la réparation *</label>
               <input
                 type="text"
+                id="objet_reparation"
                 name="objet_reparation"
                 className="form-control"
                 maxLength="255"

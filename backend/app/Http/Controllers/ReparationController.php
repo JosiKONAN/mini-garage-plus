@@ -48,17 +48,17 @@ class ReparationController extends Controller
         $data = $request->validate([
             'vehicule_id' => 'required|exists:vehicules,id',
             'date' => 'required|date',
-            'duree_main_oeuvre' => 'required|numeric|min:0',
+            'duree_main_oeuvre' => 'required|numeric|min:0|max:999.99',
             'objet_reparation' => 'required|string|max:255',
             'techniciens' => 'nullable|array',
-            'techniciens.*' => 'exists:techniciens,id',
+            'techniciens.*' => 'exists:techniciens,id|distinct',
         ]);
 
         $reparation = Reparation::create($data);
 
         // Liaison plusieurs-à-plusieurs
         if (!empty($data['techniciens'])) {
-            $reparation->techniciens()->attach($data['techniciens']);
+            $reparation->techniciens()->attach(array_unique($data['techniciens']));
         }
 
         return redirect()
@@ -95,16 +95,16 @@ class ReparationController extends Controller
         $data = $request->validate([
             'vehicule_id' => 'required|exists:vehicules,id',
             'date' => 'required|date',
-            'duree_main_oeuvre' => 'required|numeric|min:0',
+            'duree_main_oeuvre' => 'required|numeric|min:0|max:999.99',
             'objet_reparation' => 'required|string|max:255',
             'techniciens' => 'nullable|array',
-            'techniciens.*' => 'exists:techniciens,id',
+            'techniciens.*' => 'exists:techniciens,id|distinct',
         ]);
 
         $reparation->update($data);
 
         // Synchronisation complète de la table pivot
-        $reparation->techniciens()->sync($data['techniciens'] ?? []);
+        $reparation->techniciens()->sync(array_values(array_unique($data['techniciens'] ?? [])));
 
         return redirect()
             ->route('reparations.show', $reparation)

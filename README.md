@@ -84,7 +84,10 @@ npm run dev        # → http://localhost:5173
 L'URL de l'API est configurable via la variable d'environnement `VITE_API_URL`
 (defaut : `http://127.0.0.1:8000/api`).
 
-CORS : le backend n'autorise que `http://localhost:5173` (voir `backend/config/cors.php`).
+CORS : le backend autorise les origines de developpement locales
+(`http://localhost:5173`, `http://127.0.0.1:5173`, ports de `vite preview` 4173 et tout
+port localhost/127.0.0.1) — voir `backend/config/cors.php`. Un proxy `/api` est egalement
+configure dans `frontend/vite.config.js`.
 
 ## Tests
 
@@ -93,22 +96,27 @@ cd backend
 php artisan test
 ```
 
-Suite PHPUnit creee pour la Semaine 6 (`tests/Feature/ApiFunctionsS6Test.php`) :
+Suite PHPUnit creee pour la Semaine 6 — **15 tests, 51 assertions** (`php artisan test`) :
 - pagination des vehicules (9/page),
 - recherche multi-champs (immatriculation, marque, modele),
 - lecture seule des techniciens,
 - indicateurs du tableau de bord,
 - validation des donnees (`ApiVehiculeValidationTest.php`),
-- rendu des pages (`PageVehiculesTest.php`).
+- rendu des pages (`PageVehiculesTest.php`),
+- non-regression sur l'audit qualite (`ApiRegressionS6Test.php`) : bornes de `per_page`,
+  `kilometrage` nul normalise a 0, plafond de `duree_main_oeuvre`, refus des doublons de
+  techniciens (regle `distinct` + contrainte UNIQUE de la table pivot), `duree_moyenne`
+  nulle sans reparation.
 
 ## Securite, performance et eco-responsabilite
 
 - **Securite** : validation Laravel cote serveur, Eloquent (aucune requete SQL brute),
   echappement automatique de React, erreurs API structurees (`data.errors`).
-- **Performance** : pagination a 9 elements, API JSON legere (58.7 Ko gzip pour le JS),
+- **Performance** : pagination a 9 elements, API JSON legere (~60 Ko gzip pour le JS),
   requetes Eloquent ciblees.
-- **Eco-responsabilite** : aucune image lourde, requetes ciblees, composants React
-  reutilisables, cout CPU faible, code maintenable.
+- **Eco-responsabilite** : photos de vehicules optimisees et compressees (chargement
+  differe `loading="lazy"`), requetes ciblees, composants React reutilisables, cout CPU
+  faible, code maintenable.
 
 ## Lien
 

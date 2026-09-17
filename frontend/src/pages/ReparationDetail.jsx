@@ -10,10 +10,17 @@ export default function ReparationDetail() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    setReparation(null);
+    setError(null);
     api.reparations
-      .get(id)
+      .get(id, { signal: controller.signal })
       .then(setReparation)
-      .catch(setError);
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        setError(err);
+      });
+    return () => controller.abort();
   }, [id]);
 
   if (error) return <ErrorMessage error={error} />;

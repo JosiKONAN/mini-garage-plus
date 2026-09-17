@@ -10,10 +10,17 @@ export default function TechnicienDetail() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    setTechnicien(null);
+    setError(null);
     api.techniciens
-      .get(id)
+      .get(id, { signal: controller.signal })
       .then(setTechnicien)
-      .catch(setError);
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        setError(err);
+      });
+    return () => controller.abort();
   }, [id]);
 
   if (error) return <ErrorMessage error={error} />;

@@ -22,14 +22,27 @@ export default function VehiculeDetail() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    setVehicule(null);
+    setError(null);
     api.vehicules
-      .get(id)
+      .get(id, { signal: controller.signal })
       .then(setVehicule)
-      .catch(setError);
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        setError(err);
+      });
+    return () => controller.abort();
   }, [id]);
 
   if (error) return <ErrorMessage error={error} />;
   if (!vehicule) return <LoadingSpinner />;
+
+  const image = vehiculeImage(vehicule);
+
+  function fallbackAlt(e) {
+    e.currentTarget.style.display = 'none';
+  }
 
   return (
     <div>
@@ -41,12 +54,13 @@ export default function VehiculeDetail() {
 
       <div className="row g-4">
         <div className="col-lg-5">
-          {vehiculeImage(vehicule) && (
+          {image && (
             <img
-              src={vehiculeImage(vehicule)}
+              src={image}
               alt={`${vehicule.marque} ${vehicule.modele}`}
               className="img-fluid rounded mb-3 w-100"
               style={{ objectFit: 'cover', maxHeight: '280px' }}
+              onError={fallbackAlt}
             />
           )}
           <div className="card">
@@ -87,7 +101,7 @@ export default function VehiculeDetail() {
             </ul>
           </div>
 
-          <Link to="/reparations/nouvelle" className="btn btn-primary mt-3">
+          <Link to={`/reparations/nouvelle?vehicule_id=${vehicule.id}`} className="btn btn-primary mt-3">
             + Nouvelle réparation
           </Link>
         </div>

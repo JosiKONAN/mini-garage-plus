@@ -6,7 +6,8 @@ define('OUTPUT',  __DIR__ . '/garage_db.sql');
 $pdo = new PDO('sqlite:' . DB_PATH);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$rows = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")->fetchAll(PDO::FETCH_COLUMN);
+// Tables métier exportées (on exclut les tables framework et sqlite_sequence, spécifique à SQLite).
+$business = ['vehicules', 'reparations', 'techniciens', 'reparation_technicien'];
 
 $ddl = <<<'SQL'
 -- ============================================
@@ -74,14 +75,15 @@ SQL;
 
 $sql = sprintf($ddl, date('Y-m-d H:i:s'));
 
-function escape(string $val): string
-{
-    return $pdo->quote($val);
-}
+foreach ($business as $table) {
+    // Types SQLite de chaque colonne : aﬀinity numeric → valeur non quotée, sinon chaîne quotée.
+    $info = $pdo->query("PRAGMA table_info([$table])")->fetchAll(PDO::FETCH_ASSOC);
+    $types = [];
+    foreach ($info as $col) {
+        $types[$col['name']] = strtolower($col['type']);
+    }
 
-foreach ($rows as $table) {
-    $stmt = $pdo->query("SELECT * FROM [$table]");
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $data = $pdo->query("SELECT * FROM [$table]")->fetchAll(PDO::FETCH_ASSOC);
     if (!$data) continue;
 
     $sql .= "-- Données : $table\n";
@@ -92,8 +94,8 @@ foreach ($rows as $table) {
             $cols[] = "`$col`";
             if ($v === null) {
                 $vals[] = 'NULL';
-            } elseif (is_numeric($v)) {
-                $vals[] = $v;
+            } elseif (str_contains($types[$col] ?? '', 'int') || str_contains($types[$col] ?? '', 'real') || str_contains($types[$col] ?? '', 'numeric')) {
+                $vals[] = (string) $v;
             } else {
                 $vals[] = $pdo->quote((string) $v);
             }

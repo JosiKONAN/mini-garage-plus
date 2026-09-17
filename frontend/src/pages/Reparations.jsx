@@ -8,14 +8,22 @@ import ErrorMessage from '../components/ErrorMessage';
 export default function Reparations() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
+    const controller = new AbortController();
     setError(null);
+    setLoading(true);
     api.reparations
-      .list(`?page=${page}&per_page=9`)
+      .list(`?page=${page}&per_page=9`, { signal: controller.signal })
       .then(setData)
-      .catch(setError);
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        setError(err);
+      })
+      .finally(() => setLoading(false));
+    return () => controller.abort();
   }, [page]);
 
   return (
@@ -28,9 +36,9 @@ export default function Reparations() {
       </div>
 
       {error && <ErrorMessage error={error} />}
-      {!data && <LoadingSpinner />}
+      {(loading || !data) && <LoadingSpinner />}
 
-      {data && (
+      {data && !loading && (
         <>
           <p className="text-muted small">
             {data.total} réparation(s) — page {data.current_page} / {data.last_page}
@@ -42,12 +50,14 @@ export default function Reparations() {
             <table className="table table-striped table-hover align-middle">
               <thead className="table-light">
                 <tr>
-                  <th>Date</th>
-                  <th>Véhicule</th>
-                  <th>Objet</th>
-                  <th>Durée</th>
-                  <th>Techniciens</th>
-                  <th></th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Véhicule</th>
+                  <th scope="col">Objet</th>
+                  <th scope="col">Durée</th>
+                  <th scope="col">Techniciens</th>
+                  <th scope="col">
+                    <span className="visually-hidden">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>

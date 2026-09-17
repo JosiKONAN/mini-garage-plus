@@ -8,6 +8,7 @@ import ReparationForm from './pages/ReparationForm';
 import ReparationDetail from './pages/ReparationDetail';
 import Techniciens from './pages/Techniciens';
 import TechnicienDetail from './pages/TechnicienDetail';
+import NotFound from './pages/NotFound';
 
 export default function App() {
   return (
@@ -21,7 +22,7 @@ export default function App() {
         <Route path="/reparations/:id" element={<ReparationDetail />} />
         <Route path="/techniciens" element={<Techniciens />} />
         <Route path="/techniciens/:id" element={<TechnicienDetail />} />
-        <Route path="*" element={<Dashboard />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

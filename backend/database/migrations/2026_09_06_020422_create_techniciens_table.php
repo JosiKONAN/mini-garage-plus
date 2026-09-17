@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('techniciens', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
-            $table->string('prenom');
-            $table->string('specialite');
+            $table->string('nom', 60);
+            $table->string('prenom', 60);
+            $table->string('specialite', 80);
             $table->timestamps();
         });
     }

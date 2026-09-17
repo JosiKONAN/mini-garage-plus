@@ -15,7 +15,7 @@ class ReparationController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $perPage = min((int) $request->query('per_page', 9), 50);
+        $perPage = max(1, min((int) $request->query('per_page', 9), 50));
         $reparations = Reparation::with(['vehicule', 'techniciens'])
             ->orderByDesc('date')
             ->paginate($perPage);
@@ -31,16 +31,16 @@ class ReparationController extends Controller
         $data = $request->validate([
             'vehicule_id' => 'required|integer|exists:vehicules,id',
             'date' => 'required|date',
-            'duree_main_oeuvre' => 'required|numeric|min:0',
+            'duree_main_oeuvre' => 'required|numeric|min:0|max:999.99',
             'objet_reparation' => 'required|string|max:255',
             'techniciens' => 'nullable|array',
-            'techniciens.*' => 'integer|exists:techniciens,id',
+            'techniciens.*' => 'integer|distinct|exists:techniciens,id',
         ]);
 
         $reparation = Reparation::create($data);
 
         if (!empty($data['techniciens'])) {
-            $reparation->techniciens()->attach($data['techniciens']);
+            $reparation->techniciens()->attach(array_unique($data['techniciens']));
         }
 
         return response()->json($reparation->load('techniciens'), 201);
@@ -74,16 +74,16 @@ class ReparationController extends Controller
         $data = $request->validate([
             'vehicule_id' => 'sometimes|integer|exists:vehicules,id',
             'date' => 'sometimes|date',
-            'duree_main_oeuvre' => 'sometimes|numeric|min:0',
+            'duree_main_oeuvre' => 'sometimes|numeric|min:0|max:999.99',
             'objet_reparation' => 'sometimes|string|max:255',
             'techniciens' => 'nullable|array',
-            'techniciens.*' => 'integer|exists:techniciens,id',
+            'techniciens.*' => 'integer|distinct|exists:techniciens,id',
         ]);
 
         $reparation->update($data);
 
         if ($request->has('techniciens')) {
-            $reparation->techniciens()->sync($data['techniciens'] ?? []);
+            $reparation->techniciens()->sync(array_values(array_unique($data['techniciens'] ?? [])));
         }
 
         return response()->json($reparation->load('techniciens'));

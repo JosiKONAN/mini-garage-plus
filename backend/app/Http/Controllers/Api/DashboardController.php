@@ -22,7 +22,11 @@ class DashboardController extends Controller
             'reparations_mois' => Reparation::whereMonth('date', now()->month)
                 ->whereYear('date', now()->year)
                 ->count(),
-            'duree_moyenne' => round((float) Reparation::avg('duree_main_oeuvre'), 2),
+            'duree_moyenne' => (function () {
+                $moyenne = Reparation::avg('duree_main_oeuvre');
+
+                return $moyenne === null ? null : round((float) $moyenne, 2);
+            })(),
             'energies' => Vehicule::select('energie')
                 ->selectRaw('count(*) as total')
                 ->groupBy('energie')

@@ -19,28 +19,30 @@ async function apiFetch(path, options = {}) {
     throw { status: res.status, message, detail };
   }
 
+  if (res.status === 204) return null;
+
   return res.json();
 }
 
 export const api = {
   vehicules: {
-    list: (params = '') => apiFetch(`/vehicules${params}`),
-    get: (id) => apiFetch(`/vehicules/${id}`),
+    list: (params = '', options = {}) => apiFetch(`/vehicules${params}`, options),
+    get: (id, options = {}) => apiFetch(`/vehicules/${id}`, options),
     create: (data) => apiFetch('/vehicules', { method: 'POST', body: JSON.stringify(data) }),
     update: (id, data) => apiFetch(`/vehicules/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     remove: (id) => apiFetch(`/vehicules/${id}`, { method: 'DELETE' }),
   },
   reparations: {
-    list: (params = '') => apiFetch(`/reparations${params}`),
-    get: (id) => apiFetch(`/reparations/${id}`),
+    list: (params = '', options = {}) => apiFetch(`/reparations${params}`, options),
+    get: (id, options = {}) => apiFetch(`/reparations/${id}`, options),
     create: (data) => apiFetch('/reparations', { method: 'POST', body: JSON.stringify(data) }),
     remove: (id) => apiFetch(`/reparations/${id}`, { method: 'DELETE' }),
   },
   techniciens: {
-    list: () => apiFetch('/techniciens'),
-    get: (id) => apiFetch(`/techniciens/${id}`),
+    list: (params = '', options = {}) => apiFetch(`/techniciens${params}`, options),
+    get: (id, options = {}) => apiFetch(`/techniciens/${id}`, options),
   },
-  stats: () => apiFetch('/stats'),
+  stats: (options = {}) => apiFetch('/stats', options),
 };
 
 export default api;

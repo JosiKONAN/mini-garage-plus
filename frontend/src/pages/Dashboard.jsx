@@ -10,10 +10,15 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
     api
-      .stats()
+      .stats({ signal: controller.signal })
       .then(setStats)
-      .catch(setError);
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        setError(err);
+      });
+    return () => controller.abort();
   }, []);
 
   if (error) return <ErrorMessage error={error} />;
@@ -60,7 +65,10 @@ export default function Dashboard() {
                 ))}
               </ul>
               <p className="small text-muted mt-3 mb-0">
-                Durée moyenne de main-d’œuvre : {stats.duree_moyenne} h
+                Durée moyenne de main-d’œuvre :{' '}
+                {stats.duree_moyenne != null
+                  ? `${Number(stats.duree_moyenne).toLocaleString('fr-FR')} h`
+                  : '—'}
               </p>
             </div>
           </div>

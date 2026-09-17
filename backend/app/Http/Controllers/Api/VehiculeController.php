@@ -24,7 +24,7 @@ class VehiculeController extends Controller
             });
         }
 
-        $perPage = min((int) $request->query('per_page', 9), 50);
+        $perPage = max(1, min((int) $request->query('per_page', 9), 50));
         $vehicules = $query->orderByDesc('created_at')->paginate($perPage);
 
         return response()->json($vehicules);
@@ -47,6 +47,9 @@ class VehiculeController extends Controller
             'boite' => 'required|in:manuelle,automatique',
             'image' => 'nullable|string|max:255',
         ]);
+
+        // La colonne DB est NOT NULL (défaut 0) : normaliser null vers 0.
+        $data['kilometrage'] = $data['kilometrage'] ?? 0;
 
         $vehicule = Vehicule::create($data);
 
@@ -79,7 +82,7 @@ class VehiculeController extends Controller
         }
 
         $data = $request->validate([
-            'immatriculation' => 'sometimes|string|max:20|unique:vehicules,immatriculation,' . $vehicule->id,
+            'immatriculation' => 'sometimes|string|min:1|max:20|unique:vehicules,immatriculation,' . $vehicule->id,
             'marque' => 'sometimes|string|max:50',
             'modele' => 'sometimes|string|max:50',
             'couleur' => 'nullable|string|max:30',
@@ -90,6 +93,11 @@ class VehiculeController extends Controller
             'boite' => 'sometimes|in:manuelle,automatique',
             'image' => 'nullable|string|max:255',
         ]);
+
+        // La colonne DB est NOT NULL (défaut 0) : normaliser null vers 0.
+        if (array_key_exists('kilometrage', $data) && $data['kilometrage'] === null) {
+            $data['kilometrage'] = 0;
+        }
 
         $vehicule->update($data);
 
